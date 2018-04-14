@@ -1,5 +1,6 @@
 package com.edu.task1_JDBC.dao.jdbc;
 
+import com.edu.task1_JDBC.dao.DaoFactory;
 import com.edu.task1_JDBC.dao.GenericDao;
 import com.edu.task1_JDBC.dao.PersistException;
 import com.edu.task1_JDBC.entity.Identified;
@@ -9,7 +10,7 @@ import java.sql.*;
 import java.util.List;
 
 public abstract class AbstractJdbcDao<T extends Identified> implements GenericDao<T> {
-    private final Connection connection;
+    protected final Connection connection;
 
     public AbstractJdbcDao(Connection connection) {
         this.connection = connection;
@@ -30,7 +31,20 @@ public abstract class AbstractJdbcDao<T extends Identified> implements GenericDa
 
     protected abstract void fillStatementForUpdate(PreparedStatement statement, T object) throws  SQLException;
 
-    protected abstract List<T> parseResultSet(ResultSet result) throws SQLException;
+    protected abstract List<T> parseResultSet(ResultSet result) throws SQLException, PersistException;
+
+    protected void fillIdForEntityInPreparedStatement(Identified object, PreparedStatement statement, int parametrIndex) throws SQLException{
+        if (object == null){
+            statement.setNull(parametrIndex, Types.NULL);
+        }else {
+            Integer id = object.getId();
+            if (id != null) {
+                statement.setInt(parametrIndex, id);
+            }else {
+                throw new SQLException(String.format("Перед сохранением объекта %s нужно сохранить объект %s", object.getClass().getName(), object.getClass().getName()));
+            }
+        }
+    }
 
     @Override
     public T readById(Integer id) throws PersistException {
@@ -46,9 +60,11 @@ public abstract class AbstractJdbcDao<T extends Identified> implements GenericDa
         } catch (SQLException e) {
             throw new PersistException(e);
         }
-        if (list == null) {
+
+        int listSize = list.size();
+        if (listSize == 0 || list == null) {
             return null;
-        }else if (list.size() > 1){
+        } else if (listSize > 1){
             throw new PersistException("Не может быть по одному ключу несколько строк");
         }
 
@@ -120,9 +136,9 @@ public abstract class AbstractJdbcDao<T extends Identified> implements GenericDa
         Preconditions.checkNotNull(list);
 
         String sql = QueryPersist();
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             for (T object : list) {
-                Preconditions.checkArgument(object.getId() != null, "Сохранять можно только новые объекты");
+                Preconditions.checkArgument(object.getId() == null, "Сохранять можно только новые объекты");
 
                 fillStatementForPersist(statement, object);
                 connection.setAutoCommit(false);

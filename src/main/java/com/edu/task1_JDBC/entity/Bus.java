@@ -2,7 +2,11 @@ package com.edu.task1_JDBC.entity;
 
 public class Bus extends Machine {
     private int numberPassengerSeats;
-        private int numberPassengerStanding;
+    private int numberPassengerStanding;
+
+    public Bus() {
+        setTypeCar(TypeCar.Bus);
+    }
 
     public int getNumberPassengerSeats() {
         return numberPassengerSeats;

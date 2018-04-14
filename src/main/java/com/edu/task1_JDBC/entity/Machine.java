@@ -10,6 +10,7 @@ public abstract class Machine implements Serializable, Identified {
     private Date releaseYear;
     private Color color;
     private Mark mark;
+    private TypeCar typeCar;
 
     @Override
     public Integer getId() {
@@ -19,6 +20,14 @@ public abstract class Machine implements Serializable, Identified {
     @Override
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public TypeCar getTypeCar() {
+        return typeCar;
+    }
+
+    public void setTypeCar(TypeCar typeCar) {
+        this.typeCar = typeCar;
     }
 
     public String getNamePicking() {

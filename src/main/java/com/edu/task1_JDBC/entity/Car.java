@@ -5,6 +5,10 @@ import java.util.List;
 public class Car extends Machine {
     private int numberPassengerSeats;
 
+    public Car() {
+        setTypeCar(TypeCar.Car);
+    }
+
     public int getNumberPassengerSeats() {
         return numberPassengerSeats;
     }

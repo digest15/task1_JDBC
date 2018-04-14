@@ -6,10 +6,21 @@ import java.math.BigDecimal;
 /**
  * Created by damager on 17.08.17.
  */
-public class Mechanic implements Serializable {
+public class Mechanic implements Serializable, Identified {
+    private Integer id;
     private String name;
     private String lastName;
     private BigDecimal salary;
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

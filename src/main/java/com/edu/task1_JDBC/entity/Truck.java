@@ -4,6 +4,10 @@ public class Truck extends Machine {
     private int numberAxle;
     private int capacity;
 
+    public Truck() {
+        setTypeCar(TypeCar.Truck);
+    }
+
     public int getNumberAxle() {
         return numberAxle;
     }

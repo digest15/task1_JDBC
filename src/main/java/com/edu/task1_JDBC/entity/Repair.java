@@ -9,12 +9,23 @@ import java.util.Date;
 /**
  * Created by damager on 17.08.17.
  */
-public class Repair implements Serializable {
+public class Repair implements Serializable, Identified {
+    private Integer id;
     private Date dateTime;
     private CarService carServise;
     private Machine machine;
     private BigDecimal amount;
     private Mechanic mechanic;
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Date getDateTime() {
         return dateTime;

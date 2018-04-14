@@ -14,6 +14,7 @@ public class DaoFactoryHSQL implements DaoFactory {
     private String url = "jdbc:hsqldb:file:HSQLDB/CarServiceDB";
     private String driver = "org.hsqldb.jdbc.JDBCDriver";
 
+
     public DaoFactoryHSQL() {
         try {
             Class.forName(driver);
@@ -49,7 +50,27 @@ public class DaoFactoryHSQL implements DaoFactory {
     }
 
     @Override
-    public GenericDao getCarDao(Connection connection) {
-        return new CarDao(connection);
+    public GenericDao getCarDao(Connection connection, DaoFactory factory) {
+        return new CarDao(connection, factory);
+    }
+
+    @Override
+    public GenericDao getBusDao(Connection connection, DaoFactory factory) {
+        return new BusDao(connection, factory);
+    }
+
+    @Override
+    public GenericDao getTruckDao(Connection connection, DaoFactory factory) {
+        return new TruckDao(connection, factory);
+    }
+
+    @Override
+    public GenericDao getMehanicDao(Connection connection) {
+        return new MechanicDao(connection);
+    }
+
+    @Override
+    public GenericDao getRepairDao(Connection connection, DaoFactory factory) {
+        return new RepairDao(connection, factory);
     }
 }
