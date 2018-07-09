@@ -1,28 +1,49 @@
 import com.edu.task1_JDBC.dao.DaoFactory;
 import com.edu.task1_JDBC.dao.GenericDao;
-import com.edu.task1_JDBC.dao.PersistException;
 import com.edu.task1_JDBC.entity.Identified;
 import com.edu.task1_JDBC.hsql.DaoFactoryHSQL;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-public class DaoTest {
-    private DaoFactory factory;
-    private Connection connection;
-    private GenericDao dao;
-    private EntityTester tester;
+@RunWith(Parameterized.class)
+public abstract class DaoTest {
+    protected DaoFactory factory;
+    protected Connection connection;
+    protected GenericDao dao;
 
+    public abstract Identified createEntity();
 
+    public abstract Identified editEntity(Identified entity);
+
+    public abstract boolean compareEntity(Identified e1, Identified e2);
+
+    public abstract GenericDao<?> getDao();
+
+    @Parameterized.Parameters
+    public static Collection getParameters() {
+        return Arrays.asList(new Object[][]{
+                {new DaoFactoryHSQL()},
+        });
+    }
+
+    public DaoTest(DaoFactory factory) throws Exception {
+        this.factory = factory;
+
+        connection = factory.getConnection();
+        dao = getDao();
+    }
 
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() throws Exception {
+        connection = factory.getConnection();
         connection.setAutoCommit(false);
     }
 
@@ -34,7 +55,7 @@ public class DaoTest {
 
     @Test
     public void testPersist() throws Exception {
-        Identified entity = tester.createEntity();
+        Identified entity = createEntity();
         Assert.assertNull("Ожидаем, что у нового объекта пустой id", entity.getId());
 
         dao.persist(entity);
@@ -45,8 +66,8 @@ public class DaoTest {
     @Test
     public void testPersistAll() throws Exception {
         List<Identified> list = new ArrayList<>();
-        list.add(tester.createEntity());
-        list.add(tester.createEntity());
+        list.add(createEntity());
+        list.add(createEntity());
 
         dao.persistAll(list);
 
@@ -56,7 +77,7 @@ public class DaoTest {
 
     @Test
     public void testDelete() throws Exception {
-        Identified entnity = tester.createEntity();
+        Identified entnity = createEntity();
         dao.persist(entnity);
         dao.delete(entnity);
 
@@ -65,13 +86,13 @@ public class DaoTest {
 
     @Test(expected = NullPointerException.class)
     public void testDeleteNotSave() throws Exception {
-        Identified entity = tester.createEntity();
+        Identified entity = createEntity();
         dao.delete(entity);
     }
 
     @Test
-    public void testReadById() throws Exception{
-        Identified entity = tester.createEntity();
+    public void testReadById() throws Exception {
+        Identified entity = createEntity();
         dao.persist(entity);
         entity = dao.readById(entity.getId());
 
@@ -81,8 +102,8 @@ public class DaoTest {
     @Test
     public void testReadAll() throws Exception {
         List<Identified> list = new ArrayList<>();
-        list.add(tester.createEntity());
-        list.add(tester.createEntity());
+        list.add(createEntity());
+        list.add(createEntity());
         dao.persistAll(list);
 
         list = null;
@@ -93,14 +114,14 @@ public class DaoTest {
 
     @Test
     public void testUpdate() throws Exception {
-        Identified entity = tester.createEntity();
+        Identified entity = createEntity();
         dao.persist(entity);
-        entity = tester.editEntity(entity);
+        entity = editEntity(entity);
 
         dao.update(entity);
         Identified entityUpdate = dao.readById(entity.getId());
 
-        boolean compareResult = tester.compareEntity(entity, entityUpdate);
+        boolean compareResult = compareEntity(entity, entityUpdate);
         Assert.assertTrue("Ожидали, что прочитанный объект будет обновленным", compareResult);
 
     }

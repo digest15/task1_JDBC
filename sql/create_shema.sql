@@ -41,9 +41,9 @@ PRIMARY KEY (id));
 CREATE TABLE REPAIR(
 id INT NOT NULL IDENTITY,
 dateTime DATE NOT NULL,
-carServise_id INT NULL,
-machine_id INT NULL,
-mechanic_id INT NULL,
+carServise_id INT NOT NULL,
+machine_id INT NOT NULL,
+mechanic_id INT NOT NULL,
 amount NUMERIC(19,2),
 PRIMARY KEY (id));
 

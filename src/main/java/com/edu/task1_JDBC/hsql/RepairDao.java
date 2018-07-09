@@ -25,7 +25,7 @@ public class RepairDao extends AbstractJdbcDao<Repair> {
 
     @Override
     protected String QueryGetReadById() {
-        return "SSELECT repair.*, machine.typeCar FROM repair LEFT JOIN machine on repair.machine_id = machine.id WHERE machine.id = ?;";
+        return "SELECT repair.*, machine.typeCar FROM repair LEFT JOIN machine on repair.machine_id = machine.id WHERE machine.id = ?;";
     }
 
     @Override
@@ -35,7 +35,7 @@ public class RepairDao extends AbstractJdbcDao<Repair> {
 
     @Override
     protected String QueryDelete() {
-        return "DELETE REPAIR WHERE id = ?";
+        return "DELETE FROM REPAIR WHERE id = ?";
     }
 
     @Override
